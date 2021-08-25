@@ -1,2 +1,2 @@
 # Fall2021
-Projects from Fall 2021 school semester
+Homework/projects that I've been working on in the 2021 fall semester.
