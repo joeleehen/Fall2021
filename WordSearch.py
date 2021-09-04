@@ -1,3 +1,4 @@
+
 import sys
 
 
@@ -49,15 +50,17 @@ def reverseHoriSearch(grid, word):
             continue
     return location
 
+
 def vertSearch(grid, word):
+    charFound = ""
     location = (0, 0)
-    for i in range(len(grid)):
+    for i in range(len(grid) - len(word) + 1):    # ensures valid indexing
         rowExamined = grid[i]
         for j in range(len(rowExamined)):
             rowTrack = i
             if rowExamined[j] == word[0]:
                 wordTrack = 0    # used to iterate within the searchword
-                charFound = ''    # used to keep track of characters that match searchword
+                charFound = ""    # used to keep track of characters that match searchword
                 while wordTrack < len(word) and grid[rowTrack][j] == word[wordTrack]:
                     charFound += word[wordTrack]
                     rowTrack += 1
@@ -73,12 +76,15 @@ def vertSearch(grid, word):
         else:
             continue
         break    # break out of row iterator
+    if charFound != word:
+        location = (0, 0)
     return location
 
 
 def reverseVertSearch(grid, word):
     location = (0, 0)
-    for i in range(13, 0, -1):    # iterate backwards through grid
+    charFound = ""
+    for i in range(len(grid) - 1, len(word) - 2, -1):    # iterate backwards through grid
         rowExamined = grid[i]
         for j in range(len(rowExamined)):
             rowTrack = i
@@ -100,15 +106,19 @@ def reverseVertSearch(grid, word):
         else:
             continue
         break  # break out of row iterator
+    if charFound != word:
+        location = (0, 0)
+    else:
+        pass
     return location
 
 
 def bottomRightSearch(grid, word):
     charFound = ""
     location = (0, 0)
-    for i in range(len(grid)):
+    for i in range(len(grid) - len(word) + 1):
         rowExamined = grid[i]
-        for j in range(len(rowExamined)):
+        for j in range(len(rowExamined) - len(word) + 1):
             rowTrack = i
             if rowExamined[j] == word[0]:
                 wordTrack = 1  # iterates within the searchword
@@ -138,9 +148,9 @@ def bottomRightSearch(grid, word):
 def bottomLeftSearch(grid, word):
     charFound = ""
     location = (0, 0)
-    for i in range(len(grid)):
+    for i in range((len(grid) - len(word) + 1)):
         rowExamined = grid[i]
-        for j in range(len(rowExamined)):
+        for j in range((len(word) - 1), len(rowExamined)):
             rowTrack = i
             if rowExamined[j] == word[0]:
                 wordTrack = 1
@@ -170,9 +180,9 @@ def bottomLeftSearch(grid, word):
 def upperRightSearch(grid, word):
     charFound = ""
     location = (0, 0)
-    for i in range(13, 0, -1):
+    for i in range(len(grid) - 1, len(word) - 2, -1):
         rowExamined = grid[i]
-        for j in range(len(rowExamined)):
+        for j in range(len(rowExamined) - len(word) + 1):
             rowTrack = i
             if rowExamined[j] == word[0]:
                 wordTrack = 1
@@ -198,10 +208,11 @@ def upperRightSearch(grid, word):
         location = (0, 0)
     return location
 
+
 def upperLeftSearch(grid, word):
     charFound = ""
     location = (0, 0)
-    for i in range(13, 0, -1):
+    for i in range(len(grid) - 1, len(word) - 2, -1):
         rowExamined = grid[i]
         for j in range(len(rowExamined)):
             rowTrack = i
@@ -231,55 +242,41 @@ def upperLeftSearch(grid, word):
 
 
 def read_input():
-    # gridSize = sys.stdin.readline()
-    f = open(r"C:\Users\Joey\Fall2021\word_grid.in.txt", "r")    # FIXME
-    gridSize = (f.readline())     # FIXME
-    # gridList = getGridList(gridSize)
-    gridList = []     # FIXME
-    for i in range(int(gridSize)):    # FIXME
-        rowStr = f.readline()    # FIXME
-        rowStr = rowStr.replace("\n", "")  # FIXME
-        rowLst = []    # FIXME
-        for c in rowStr:  # FIXME
-            if c != " ":    # FIXME
-                rowLst.append(c)    # FIXME
-        gridList.append(rowLst)    # FIXME
-    f.readline()    # FIXME
-    # sys.stdin.readline()
-    numWords = (f.readline())    # FIXME
-    wordList = []    # FIXME
-    for i in range(int(numWords)):    # FIXME
-        wordStr = f.readline()    # FIXME
-        wordStr = wordStr.replace("\n", "")    # FIXME
-        wordList.append(wordStr)    # FIXME
-    # wordList = getWorkBank()
+    gridSize = sys.stdin.readline()
+    gridSize = int(gridSize)
+    sys.stdin.readline()    # skip blank line
+    gridList = getGridList(gridSize)
+    sys.stdin.readline()
+    wordList = getWorkBank()
     return gridList, wordList
 
 
 def find_word(grid, word):
-    location = (0, 0)
-    while location == (0, 0):
-        location = horiSearch(grid, word)
+    location = horiSearch(grid, word)
+    if location == (0, 0):
         location = reverseHoriSearch(grid, word)
-        location = vertSearch(grid, word)
-        location = reverseVertSearch(grid, word)
-        location = bottomRightSearch(grid, word)
-        location = bottomLeftSearch(grid, word)
-        location = upperRightSearch(grid, word)
-        location = upperLeftSearch(grid, word)
-        location = (-1, -1)    # breaks loop while still showing word isn't in grid
+        if location == (0, 0):
+            location = vertSearch(grid, word)
+            if location == (0, 0):
+                location = reverseVertSearch(grid, word)
+                if location == (0, 0):
+                    location = bottomLeftSearch(grid, word)
+                    if location == (0, 0):
+                        location = bottomRightSearch(grid, word)
+                        if location == (0, 0):
+                            location = upperLeftSearch(grid, word)
+                            if location == (0, 0):
+                                location = upperRightSearch(grid, word)
     return location
 
 
 def main():
     gridList, wordList = read_input()
     for word in wordList:
-        loc_found = find_word(gridList, word)
-        if loc_found == (-1, -1):    # if word isn't in grid
-            loc_found = (0, 0)
-        else:
-            continue
-        print(word + ": " + str(loc_found))
+        location = find_word(gridList, word)
+        if location == (-1, -1):    # if word isn't in grid
+            location = (0, 0)
+        print(word + ": " + str(location))
 
 
 if __name__ == "__main__":
