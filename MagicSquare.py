@@ -1,15 +1,12 @@
+
 import sys
 
-# Populate a 2-D list with numbers from 1 to n2
-# This function must take as input an integer. You may assume that
-# n >= 1 and n is odd. This function must return a 2-D list (a list of
-# lists of integers) representing the square.
-# Example 1: make_square(1) should return [[1]]
-# Example 2: make_square(3) should return [[4, 9, 2], [3, 5, 7], [8, 1, 6]]
+
 def make_square(n):
     magicSquare = []
+    n = int(n)
     if n != 1:
-        for i in range(n):
+        for i in range(int(n)):
             magicSquare.append(["x" for i in range(n)])    # makes empty row list
         for i in range(n):
             magicSquare[i].append("invalid")
@@ -45,25 +42,14 @@ def make_square(n):
 
         return magicSquare
 
-# Print the magic square in a neat format where the numbers
-# are right justified. This is a helper function.
-# This function must take as input a 2-D list of integers
-# This function does not return any value
-# Example: Calling print_square (make_square(3)) should print the output
-# 4 9 2
-# 3 5 7
-# 8 1 6
+
 def print_square(magic_square):
     for row in magic_square:
         for num in row:
-            print(num + " ", end="")
+            print(str(num), end=" ")
         print()
 
-# Check that the 2-D list generated is indeed a magic square
-# This function must take as input a 2-D list, and return a boolean
-# This is a helper function.
-# Example 1: check_square([[1, 2], [3, 4]]) should return False
-# Example 2: check_square([[4, 9, 2], [3, 5, 7], [8, 1, 6]]) should return True
+
 def check_square(magic_square):
     magicSum = len(magic_square) * ((len(magic_square) ** 2) + 1) // 2
     for row in magic_square:    # check the rows
@@ -89,25 +75,23 @@ def check_square(magic_square):
 
     return True
 
-# Input: square is a 2-D list and n is an integer
-# Output: returns two integers representing the locations of n in the square
+
 def findNumber(square, n):
     for i in range(len(square)):
         xCord = i
-        rowString = "".join(square[i])
-        yCord = rowString.find(str(n))
+        try:
+            yCord = square[i].index(str(n))
+        except ValueError:
+            yCord = -1
         if yCord != -1:
             break
     return xCord, yCord
 
-# Input: square is a 2-D list and n is an integer
-# Output: returns an integer that is the sum of the
-#         numbers adjacent to n in the magic square
-#         if n is outside the range return 0
+
 def sum_adjacent_numbers(square, n):
     # find n in square
     numList = [i for i in range(1, (len(square) ** 2) + 1)]
-    if n not in numList:
+    if int(n) not in numList:
         adjSum = 0
     else:
         adjSum = 0
@@ -130,7 +114,7 @@ def sum_adjacent_numbers(square, n):
                 adjSum += int(square[x][y + 1])
                 adjSum += int(square[x + 1][y])
                 adjSum += int(square[x + 1][y + 1])
-        if y == len(square) - 1:
+        elif y == len(square) - 1:
             if x == 0:
                 # add left, bottom 2
                 adjSum += int(square[x][y - 1])
@@ -141,6 +125,13 @@ def sum_adjacent_numbers(square, n):
                 adjSum += int(square[x - 1][y])
                 adjSum += int(square[x - 1][y - 1])
                 adjSum += int(square[x][y - 1])
+            else:
+                # add top 2, left, bottom 2
+                adjSum += int(square[x - 1][y - 1])
+                adjSum += int(square[x - 1][y])
+                adjSum += int(square[x][y - 1])
+                adjSum += int(square[x + 1][y - 1])
+                adjSum += int(square[x + 1][y])
         elif x == 0:
             # add sides, bottom 3
             adjSum += int(square[x][y - 1])
@@ -167,13 +158,14 @@ def sum_adjacent_numbers(square, n):
             adjSum += int(square[x + 1][y + 1])
     return adjSum
 
+
 def main():
     # read input file from stdin
     size = sys.stdin.readline()
     # create magic square
     magicSquare = make_square(size)
     # print the sum of the adjacent numbers
-    for line in sys.stdin():
+    for line in map(str.rstrip, sys.stdin):
         findMe = line
         magicSum = sum_adjacent_numbers(magicSquare, findMe)
         print(magicSum)
