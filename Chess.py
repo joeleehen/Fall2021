@@ -1,32 +1,13 @@
-#  File: Chess.py
-
-#  Description:
-
-#  Student Name: Joseph Hendrix
-
-#  Student UT EID: jlh7459
-
-#  Partner Name:
-
-#  Partner UT EID:
-
-#  Course Name: CS 313E
-
-#  Unique Number: 52595
-
-#  Date Created: 10/17/21
-
-#  Date Last Modified: TODO: update
+# Partner work with Kalab Alemu
 
 import sys
 
 
 class Queens(object):
-
     def __init__(self, n=8):
         self.board = []
         self.n = n
-        self.solutions = []    # list of solutions, will be checked for duplicates
+        self.all_boards = []
         for i in range(self.n):
             row = []
             for j in range(self.n):
@@ -34,9 +15,9 @@ class Queens(object):
             self.board.append(row)
 
     # print the board
-    def print_board(self):
-        for i in range(self.n):
-            for j in range(self.n):
+    def __str__(self):
+        for i in range(len(self.all_boards)):
+            for j in range(len(self.all_boards)):
                 print(self.board[i][j], end=' ')
             print()
         print()
@@ -54,28 +35,25 @@ class Queens(object):
                     return False
         return True
 
-    # do the recursive backtracking
-    def recursive_solve(self, col, backIdx):
+    # do the recursive backtracking # if the problem has a solution print the board
+    def recursive_solve(self, col):
         if col == self.n:
-            self.solutions.append(self.board)
-            self.board[backIdx][col - 1] = "*"
-            #return True
+            return self.solve()
         else:
             for i in range(self.n):
                 if self.is_valid(i, col):
                     self.board[i][col] = 'Q'
-
-                    if self.recursive_solve(col + 1, i):
-                        # return True
-                        continue
-                    self.board[i][col] = '*'    # backtrack here if invalid queen placement
+                    if self.recursive_solve(col + 1):
+                        return True
+                    self.board[i][col] = '*'
             return False
 
-    # if the problem has a solution print the board
     def solve(self):
-        for i in range(self.n):
-            if self.recursive_solve(i, self.n):
-                self.print_board()
+        for j in range(self.n):
+            for i in range(self.n):
+                appendMe = self.board[i][j]
+        self.all_boards.append(appendMe)
+
 
 def main():
     # read the size of the board
@@ -87,11 +65,10 @@ def main():
     game = Queens(n)
 
     # place the queens on the board and count the solutions
-    game.solve()
+    game.recursive_solve(0)
+
     # print the number of solutions
-    print(len(game.solutions))
-    for sol in game.solutions:
-        print(sol)
+    print(len(game.all_boards))
 
 
 if __name__ == "__main__":
