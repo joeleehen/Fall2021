@@ -1,4 +1,4 @@
-# Partner work with Kalab Alemu
+# Pair Programming with Kalab Alemu
 
 import sys
 
